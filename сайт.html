@@ -1,0 +1,139 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>English with me</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--tx:#1d2330;--mu:#6b7385;--ac:#4f46e5;--ln:#e3e6ef;--ok:#16a34a;--no:#dc2626;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#12141c;--card:#1b1f2b;--tx:#e8eaf2;--mu:#98a0b5;--ac:#818cf8;--ln:#2b3040}}
+*{box-sizing:border-box}html{color-scheme:light dark}body{margin:0;font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--tx)}
+header{display:flex;gap:12px;align-items:center;padding:12px 20px;background:var(--card);border-bottom:1px solid var(--ln)}
+h1{font-size:20px;margin:0;flex:1}button,input,textarea,select{font:inherit;color:inherit}
+button{background:var(--card);border:1px solid var(--ln);border-radius:10px;padding:7px 12px;cursor:pointer}
+button.p,#sb button.on{background:var(--ac);border-color:var(--ac);color:#fff}button.r{background:var(--no);border-color:var(--no);color:#fff}
+#sb{position:fixed;top:0;left:0;bottom:0;width:230px;transform:translateX(-100%);transition:transform .2s;z-index:20;background:var(--card);border-right:1px solid var(--ln);padding:calc(16px + env(safe-area-inset-top,0px)) 12px 16px;display:flex;flex-direction:column;gap:6px}
+#sb button{text-align:left;border:0;padding:10px 12px}body.open #sb{transform:none}
+#ov{position:fixed;inset:0;background:#0006;z-index:10;display:none}body.open #ov{display:block}
+body:not(.owner) .tch{display:none!important}
+main{display:grid;grid-template-columns:1fr;gap:16px;padding:16px 20px;max-width:1200px;margin:auto}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:16px}
+.call-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,320px);gap:16px;align-items:start}.call-content{min-width:0}.chat-panel{min-width:0}.student-page{margin-top:14px}
+@media(max-width:800px){.call-layout{grid-template-columns:1fr}}
+.videos{position:relative;background:#000;border-radius:12px;aspect-ratio:16/9;overflow:hidden}.videos video{width:100%;height:100%;object-fit:contain}
+#lv{position:absolute;right:10px;bottom:10px;width:25%;height:auto;border-radius:8px;border:2px solid #fff;background:#222}#rs{position:absolute;inset:0;background:#000}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}.mu{color:var(--mu);font-size:14px}
+#callMsgs,#studentMsgs{height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.m{max-width:85%;padding:7px 11px;border-radius:12px;background:var(--bg);align-self:flex-start;overflow-wrap:anywhere}.m.me{align-self:flex-end;background:var(--ac);color:#fff}.m b{display:block;font-size:12px;opacity:.7}
+.row{display:flex;gap:8px}.row input{flex:1;min-width:0}
+input,textarea,select{background:var(--bg);border:1px solid var(--ln);border-radius:8px;padding:8px;width:100%}
+.blk{border:1px dashed var(--ln);border-radius:10px;padding:10px;margin:10px 0}.blk label{font-size:13px;color:var(--mu)}.blk input,.blk textarea{margin-top:6px}
+.gap{width:auto;display:inline-block;padding:2px 6px;text-align:center}.good{border-color:var(--ok)!important}.bad{border-color:var(--no)!important}
+.opt{display:block;margin:4px 0}.opt input{width:auto;margin-right:8px}.mr{display:flex;gap:8px;align-items:center;margin:6px 0}.mr select{width:auto}
+.ord button{margin:3px}.built{min-height:34px;border-bottom:2px solid var(--ln);margin-bottom:6px;cursor:pointer}
+.li{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--ln);flex-wrap:wrap}
+[hidden]{display:none!important}img.lm,audio{max-width:100%}
+</style></head><body>
+<aside id="sb"><b style="padding:0 12px 8px">🎓 Меню</b>
+<button data-t="stu" class="tch">👥 Ученики</button><button data-t="cls" class="tch">🏫 Классы</button><button data-t="les">📚 Материалы</button><button data-t="call">📹 Звонок</button><button data-t="bld" class="tch">🛠 Конструктор</button></aside><div id="ov"></div>
+<header><button id="mb">☰</button><h1>English with me</h1><span class="mu" id="who">Учитель · без авторизации</span></header>
+<main><section>
+<div id="stu" class="card" hidden><div class="row"><input id="sn" placeholder="Имя ученика"><input id="sl" placeholder="Уровень (A2, B1…)" style="max-width:150px"><button class="p" onclick="addS()">Добавить</button></div><div id="sli"></div><div id="studentDetail" class="student-page" hidden><button onclick="closeStudent()">← К списку учеников</button><h2 id="studentName"></h2><div id="studentMaterials"></div><section class="card chat-panel"><b>Чат с учеником</b><div id="studentMsgs"></div><div class="row"><input id="studentInput" placeholder="Сообщение ученику…"><button class="p chat-send" data-input="studentInput">→</button></div></section></div></div>
+<div id="cls" class="card" hidden></div>
+<div id="les" class="card" hidden><div id="list"></div><div id="view"></div></div>
+<div id="call" class="card call-layout" hidden><div class="call-content"><div class="videos"><video id="rv" autoplay playsinline></video><video id="rs" autoplay playsinline hidden></video><video id="lv" autoplay playsinline muted></video></div>
+<div class="bar"><button class="p" id="bv">📹 Видеозвонок</button><button id="ba">📞 Аудиозвонок</button><button id="sh">🖥 Показать экран</button><button class="r" id="bh">Завершить</button><span class="mu" id="st"></span></div>
+<p class="mu">Собеседник должен одновременно открыть эту страницу.</p></div><section class="card chat-panel"><b>Чат звонка</b><div id="callMsgs"></div><div class="row"><input id="callInput" placeholder="Сообщение…"><button class="p chat-send" data-input="callInput">→</button></div></section></div>
+<div id="bld" class="card" hidden></div></section>
+<p class="mu" id="cn"></p></main>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuf=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
+let room=null,owner=true,uid='local',me={name:'Учитель'},lessons=[],studs=[],draft=null,pc,local,screen,scrId=null,ans=false,pend=[],selectedStudentId=null,chatThread='call',chatHistory={};
+const nm=()=>me.name;
+function tab(t){if(!owner&&(t==='stu'||t==='cls'||t==='bld'))t='les';['stu','cls','les','call','bld'].forEach(x=>$('#'+x).hidden=x!==t);document.querySelectorAll('#sb button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));document.body.classList.remove('open');if(t==='call')chatThread='call';else if(t==='stu'&&selectedStudentId)chatThread='student:'+selectedStudentId;if(t==='bld')build();else refresh();renderChat()}
+document.querySelectorAll('#sb button').forEach(b=>b.onclick=()=>tab(b.dataset.t));$('#mb').onclick=()=>document.body.classList.add('open');$('#ov').onclick=()=>document.body.classList.remove('open');
+function refresh(){rStu();rCls();rLes()}
+function saveStudents(){localStorage.setItem('englishWithMe.students',JSON.stringify(studs))}
+function saveLessons(){localStorage.setItem('englishWithMe.lessons',JSON.stringify(lessons))}
+/* chat */
+function saveChats(){localStorage.setItem('englishWithMe.chats',JSON.stringify(chatHistory))}
+function renderChat(){const target=chatThread==='call'?'#callMsgs':'#studentMsgs',box=$(target);if(!box)return;box.innerHTML='';(chatHistory[chatThread]||[]).forEach(m=>{const e=document.createElement('div');e.className='m'+(m.mine?' me':'');e.innerHTML='<b>'+esc(m.n)+'</b>'+esc(m.t);box.append(e)});box.scrollTop=box.scrollHeight}
+function addMsg(d,mine,thread='call'){chatHistory[thread]||(chatHistory[thread]=[]);chatHistory[thread].push({n:d.n,t:d.t,mine});saveChats();if(thread===chatThread)renderChat()}
+function send(inputId){const input=$('#'+inputId),t=input.value.trim();if(!t)return;const d={n:nm(),t,thread:chatThread};if(room)room.emit('chat',d);addMsg(d,true,chatThread);input.value=''}
+document.querySelectorAll('.chat-send').forEach(b=>b.onclick=()=>send(b.dataset.input));
+[['callInput','call'],['studentInput','student']].forEach(([id])=>$('#'+id).onkeydown=e=>{if(e.key==='Enter')send(id)});
+/* call */
+function mk(){if(pc)return pc;pc=new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});
+pc.onicecandidate=e=>e.candidate&&room.emit('sig',{c:e.candidate});
+pc.ontrack=e=>{const s=e.streams[0];if(!s)return;if(s.id===scrId){$('#rs').srcObject=s;$('#rs').hidden=false}else $('#rv').srcObject=s};
+pc.onnegotiationneeded=async()=>{if(ans||pc.signalingState!=='stable')return;await pc.setLocalDescription();room.emit('sig',{d:pc.localDescription})};
+pc.onconnectionstatechange=()=>{$('#st').textContent={connected:'Соединено',connecting:'Соединяем…',failed:'Не удалось соединиться'}[pc.connectionState]||''};return pc}
+async function media(v){if(local)return true;const g=o=>navigator.mediaDevices.getUserMedia(o);
+try{local=await g({audio:true,video:v})}catch(e){if(v)try{local=await g({audio:true})}catch(_){}}
+if(!local){alert('Нет доступа к микрофону или камере');return false}
+$('#lv').srcObject=local;mk();local.getTracks().forEach(t=>pc.addTrack(t,local));return true}
+async function onSig(m){if(m.isMe)return;const d=m.data;
+if(d.scr!==undefined){scrId=d.scr;if(!d.scr)$('#rs').hidden=true;return}
+if(d.bye){hang(true);return}
+if(d.d){mk();if(d.d.type==='offer'){ans=true;try{if(!local)await media(true);if(pc.signalingState!=='stable')await pc.setLocalDescription({type:'rollback'});await pc.setRemoteDescription(d.d);for(const c of pend)await pc.addIceCandidate(c).catch(()=>{});pend=[];await pc.setLocalDescription();room.emit('sig',{d:pc.localDescription})}finally{ans=false}}
+else await pc.setRemoteDescription(d.d)}
+else if(d.c){mk();if(pc.remoteDescription)pc.addIceCandidate(d.c).catch(()=>{});else pend.push(d.c)}}
+function hang(remote){if(!remote&&room)room.emit('sig',{bye:1});if(screen){screen.getTracks().forEach(t=>t.stop());screen=null}
+if(local){local.getTracks().forEach(t=>t.stop());local=null}if(pc){pc.close();pc=null}pend=[];scrId=null;
+['#rv','#rs','#lv'].forEach(s=>$(s).srcObject=null);$('#rs').hidden=true;$('#st').textContent='';$('#sh').textContent='🖥 Показать экран'}
+async function share(){if(!pc)return alert('Сначала начните звонок');if(screen){stopShare();return}
+try{screen=await navigator.mediaDevices.getDisplayMedia({video:true})}catch(e){return alert('Показ экрана недоступен в этом браузере')}
+await room.emit('sig',{scr:screen.id});screen.getTracks().forEach(t=>pc.addTrack(t,screen));screen.getVideoTracks()[0].onended=stopShare;$('#sh').textContent='⏹ Остановить показ'}
+function stopShare(){if(!screen)return;const ts=screen.getTracks();pc&&pc.getSenders().filter(s=>s.track&&ts.includes(s.track)).forEach(s=>pc.removeTrack(s));ts.forEach(t=>t.stop());screen=null;room.emit('sig',{scr:null});$('#sh').textContent='🖥 Показать экран'}
+$('#bv').onclick=()=>room?media(true):alert('Звонки недоступны');$('#ba').onclick=()=>room?media(false):alert('Звонки недоступны');$('#sh').onclick=share;$('#bh').onclick=()=>hang(false);
+/* students & classes */
+const S=()=>db.collection('students');
+function rStu(){$('#sli').hidden=!!selectedStudentId;$('#studentDetail').hidden=!selectedStudentId;$('#sli').innerHTML=studs.length?studs.map(s=>`<div class="li"><span><b>${esc(s.name)}</b> <span class="mu">${esc(s.level||'')}${s.reg?' · зарегистрирован':''}</span></span><span><button onclick="openStudent('${s.id}')">Открыть ученика</button> <button onclick="tab('cls')">Класс</button> <button onclick="delS('${s.id}')">✕</button></span></div>`).join(''):'<p class="mu">Добавьте первого ученика.</p>';if(selectedStudentId)renderStudentDetail()}
+function openStudent(id){if(!studs.some(s=>s.id===id))return;selectedStudentId=id;chatThread='student:'+id;rStu();renderChat()}
+function closeStudent(){selectedStudentId=null;chatThread='call';rStu()}
+function renderStudentDetail(){const s=studs.find(x=>x.id===selectedStudentId);if(!s){selectedStudentId=null;return}$('#studentName').textContent=s.name+(s.level?' · '+s.level:'');const assigned=(s.mats||[]).map(id=>lessons.find(l=>l.id===id)).filter(Boolean);$('#studentMaterials').innerHTML='<h3>Материалы</h3>'+(assigned.length?assigned.map(l=>`<button onclick="openL('${l.id}')">${esc(l.title||'Без названия')}</button> `).join(''):'<p class="mu">Материалов пока нет.</p>')}
+function addS(){const n=$('#sn').value.trim();if(!n)return;studs.push({id:'s'+Date.now(),name:n,level:$('#sl').value.trim(),mats:[]});saveStudents();$('#sn').value=$('#sl').value='';refresh()}
+const delS=id=>{if(!confirm('Удалить ученика?'))return;studs=studs.filter(s=>s.id!==id);saveStudents();refresh()};
+function rCls(){$('#cls').innerHTML=studs.length?studs.map(s=>`<div class="blk"><b>${esc(s.name)}</b> <span class="mu">${esc(s.level||'')}</span><div style="margin-top:6px">${(s.mats||[]).map(id=>{const l=lessons.find(x=>x.id===id);return l?`<button onclick="openL('${id}')">${esc(l.title||'Без названия')}</button><button class="tch" onclick="unas('${s.id}','${id}')">✕</button> `:''}).join('')||'<span class="mu">Материалов пока нет</span>'}</div>
+<div class="tch row" style="margin-top:8px"><select id="a_${s.id}">${lessons.map(l=>`<option value="${l.id}">${esc(l.title)}</option>`).join('')}</select><button onclick="asg('${s.id}')">Назначить</button></div></div>`).join(''):'<p class="mu">Здесь появятся ученики с их материалами.</p>'}
+const upM=(id,f)=>{const s=studs.find(x=>x.id===id);if(!s)return; s.mats=f(s.mats||[]);saveStudents();refresh()};
+const asg=id=>{const v=$('#a_'+id).value;v&&upM(id,m=>[...new Set([...m,v])])},unas=(id,l)=>upM(id,m=>m.filter(x=>x!==l));
+/* materials */
+function rLes(){$('#list').innerHTML=owner?`<div class="bar"><button class="p" onclick="draft=null;tab('bld')">＋ Создать материал</button></div>`:'';$('#list').innerHTML+=lessons.length?lessons.map(l=>`<div class="li"><span>${esc(l.title)}</span><span><button onclick="openL('${l.id}')">Открыть</button> <button class="tch" onclick="room&&room.emit('lesson',{id:'${l.id}'});openL('${l.id}')">Показать ученику</button> <button class="tch" onclick="editL('${l.id}')">Изменить</button> <button class="tch" onclick="delL('${l.id}')">✕</button></span></div>`).join(''):'<p class="mu">Материалов пока нет.</p>'}
+const editL=id=>{draft=JSON.parse(JSON.stringify(lessons.find(x=>x.id===id)));tab('bld')},delL=id=>{if(!confirm('Удалить материал?'))return;lessons=lessons.filter(x=>x.id!==id);saveLessons();refresh()};
+function openL(id){const l=lessons.find(x=>x.id===id);if(!l)return;tab('les');
+$('#view').innerHTML='<h2>'+esc(l.title)+'</h2>'+l.blocks.map((b,k)=>{const n='q'+k,v=esc(b.v);switch(b.t){
+case'h':return'<h3>'+v+'</h3>';case'text':return'<p>'+v.replace(/\n/g,'<br>')+'</p>';
+case'img':return b.u?`<img class="lm" src="${esc(b.u)}">`:'';case'aud':return b.u?`<audio controls src="${esc(b.u)}"></audio>`:'';
+case'gap':return'<p>'+v.replace(/\[([^\]]+)\]/g,(_,a)=>`<input class="gap" data-a="${a}" size="${a.length+2}">`)+'</p>';
+case'quiz':return'<div><b>'+esc(b.q)+'</b>'+b.o.split('\n').filter(Boolean).map(o=>{const ok=o[0]==='*';return`<label class="opt"><input type="radio" name="${n}" data-ok="${ok?1:0}">${esc(ok?o.slice(1):o)}</label>`}).join('')+'</div>';
+case'multi':return`<div class="multi"><b>${esc(b.q)}</b>${b.o.split('\n').filter(Boolean).map(o=>{const ok=o[0]==='*';return`<label class="opt"><input type="checkbox" data-ok="${ok?1:0}">${esc(ok?o.slice(1):o)}</label>`}).join('')}</div>`;
+case'tf':return`<div class="tf" data-a="${b.v==='false'?'false':'true'}"><b>${esc(b.q)}</b>${[['true','Верно'],['false','Неверно']].map(x=>`<label class="opt"><input type="radio" name="${n}" value="${x[0]}" data-ok="${x[0]===b.v?'1':'0'}">${x[1]}</label>`).join('')}</div>`;
+case'short':return`<div><b>${esc(b.q)}</b><input class="short" data-a="${esc(b.a)}" placeholder="Ваш ответ"></div>`;
+case'cards':return`<div class="flash">${b.v.split('\n').filter(x=>x.includes('=')).map(x=>{const p=x.split('='),front=p.shift().trim(),back=p.join('=').trim();return`<button type="button" data-front="${esc(front)}" data-back="${esc(back)}">${esc(front)}</button>`}).join('')}</div>`;
+case'match':{const p=b.v.split('\n').map(x=>x.split('=').map(y=>y.trim())).filter(x=>x[1]);const rs=shuf(p.map(x=>x[1]));return p.map(x=>`<div class="mr"><span>${esc(x[0])}</span><select data-m="${esc(x[1])}"><option value="">—</option>${rs.map(r=>`<option>${esc(r)}</option>`).join('')}</select></div>`).join('')}
+case'order':return`<div class="ord" data-a="${v}"><div class="built"></div>${shuf(b.v.split(/\s+/).filter(Boolean)).map(w=>`<button>${esc(w)}</button>`).join('')}</div>`;
+case'open':return`<p><b>${v}</b></p><textarea rows="3" placeholder="Ваш ответ"></textarea>`}return''}).join('')+'<p><button class="p" id="chk">Проверить</button></p>';
+document.querySelectorAll('#view .ord').forEach(o=>{const bt=o.querySelector('.built');o.querySelectorAll('button').forEach(b=>b.onclick=()=>{bt.textContent=(bt.textContent+' '+b.textContent).trim();b.hidden=true});bt.onclick=()=>{bt.textContent='';o.querySelectorAll('button').forEach(b=>b.hidden=false)}});
+document.querySelectorAll('#view .flash button').forEach(b=>b.onclick=()=>b.textContent=b.textContent===b.dataset.front?b.dataset.back:b.dataset.front);
+$('#chk').onclick=()=>{const m=(e,ok)=>{e.classList.toggle('good',ok);e.classList.toggle('bad',!ok)};
+document.querySelectorAll('#view .gap').forEach(i=>m(i,i.value.trim().toLowerCase()===i.dataset.a.trim().toLowerCase()));
+document.querySelectorAll('#view [data-m]').forEach(s=>m(s,s.value===s.dataset.m));
+document.querySelectorAll('#view .ord').forEach(o=>m(o.querySelector('.built'),o.querySelector('.built').textContent.trim()===o.dataset.a.trim()));
+document.querySelectorAll('#view .multi').forEach(o=>m(o,[...o.querySelectorAll('input')].every(i=>i.checked===(i.dataset.ok==='1'))));
+document.querySelectorAll('#view .tf').forEach(o=>{const i=o.querySelector('input:checked');m(o,!!i&&i.value===o.dataset.a)});
+document.querySelectorAll('#view .short').forEach(i=>m(i,i.value.trim().toLowerCase()===i.dataset.a.trim().toLowerCase()));
+document.querySelectorAll('#view .opt input').forEach(i=>{i.parentElement.style.color=i.checked?(i.dataset.ok==='1'?'var(--ok)':'var(--no)'):''})}}
+/* builder */
+const NAMES={h:'Заголовок',text:'Текст',img:'Картинка',aud:'Аудио',gap:'Пропуски',quiz:'Тест',multi:'Несколько правильных ответов',tf:'Верно или неверно',short:'Короткий ответ',match:'Сопоставление',order:'Порядок слов',cards:'Карточки',open:'Открытый ответ'};
+const FLD={h:[['v','Заголовок']],text:[['v','Текст',1]],gap:[['v','I [am] a teacher. Слова в [скобках] станут пропусками',1]],quiz:[['q','Вопрос'],['o','Варианты, по одному в строке. Верный отметьте * в начале',1]],multi:[['q','Вопрос'],['o','Варианты, по одному в строке. Все верные отметьте * в начале',1]],tf:[['q','Утверждение'],['v','Правильный ответ: true или false']],short:[['q','Задание'],['a','Правильный ответ']],match:[['v','Пары, по одной в строке: dog = собака',1]],order:[['v','Правильное предложение, ученик соберёт его из слов']],cards:[['v','Карточки, по одной паре в строке: dog = собака',1]],open:[['v','Вопрос или задание',1]]};
+function build(){if(!draft)draft={id:'l'+Date.now(),title:'',blocks:[]};
+$('#bld').innerHTML=`<label class="mu">Название материала</label><input id="dt" value="${esc(draft.title)}">`+draft.blocks.map((b,i)=>`<div class="blk"><label>${NAMES[b.t]} <button onclick="mv(${i},-1)">↑</button><button onclick="mv(${i},1)">↓</button><button onclick="draft.blocks.splice(${i},1);build()">✕</button></label>`+
+(FLD[b.t]?FLD[b.t].map(f=>f[2]?`<textarea rows="3" data-i="${i}" data-k="${f[0]}" placeholder="${esc(f[1])}">${esc(b[f[0]])}</textarea>`:`<input data-i="${i}" data-k="${f[0]}" placeholder="${esc(f[1])}" value="${esc(b[f[0]])}">`).join(''):`<input type="file" accept="${b.t==='img'?'image/*':'audio/*'}" onchange="up(${i},this.files[0])"> <span class="mu" id="u${i}">${b.u?'Загружено ✓':''}</span>`)+'</div>').join('')+
+`<div class="bar">${Object.keys(NAMES).map(t=>`<button onclick="add('${t}')">+ ${NAMES[t]}</button>`).join('')}</div><div class="bar"><button class="p" onclick="save()">Сохранить</button><button onclick="draft=null;build()">Новый</button></div>`;
+$('#dt').oninput=e=>draft.title=e.target.value;document.querySelectorAll('#bld [data-k]').forEach(e=>e.oninput=()=>draft.blocks[e.dataset.i][e.dataset.k]=e.value)}
+const add=t=>{draft.blocks.push({t,v:t==='tf'?'true':'',q:'',o:'',a:'',u:''});build()},mv=(i,d)=>{const b=draft.blocks,j=i+d;if(j<0||j>=b.length)return;[b[i],b[j]]=[b[j],b[i]];build()};
+async function up(i,f){if(!f)return;if(f.size>1024*1024)return alert('Для локального хранения выберите файл меньше 1 МБ.');try{const url=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(reader.error);reader.readAsDataURL(f)});draft.blocks[i].u=url;$('#u'+i).textContent='Загружено ✓'}catch(e){alert('Не удалось прочитать файл: '+e.message)}}
+function save(){if(!draft.title.trim())return alert('Введите название');const i=lessons.findIndex(x=>x.id===draft.id),item={id:draft.id,title:draft.title,blocks:draft.blocks};if(i<0)lessons.push(item);else lessons[i]=item;try{saveLessons();alert('Сохранено')}catch(e){alert('Не удалось сохранить данные браузера: '+e.message)}}
+/* init */
+async function init(){try{studs=JSON.parse(localStorage.getItem('englishWithMe.students')||'[]');lessons=JSON.parse(localStorage.getItem('englishWithMe.lessons')||'[]');chatHistory=JSON.parse(localStorage.getItem('englishWithMe.chats')||'{}')}catch(e){alert('Не удалось загрузить сохранённые данные: '+e.message);studs=[];lessons=[];chatHistory={}}
+document.body.classList.add('owner');if(typeof window.claude!=='undefined'&&typeof claude.use==='function'){try{room=await claude.use('room');if(room){room.on('chat',m=>!m.isMe&&addMsg(m.data,false,m.data.thread||'call'));room.on('sig',onSig);room.on('lesson',m=>!m.isMe&&m.data&&openL(m.data.id))}}catch(e){$('#cn').textContent='Не удалось подключить чат и звонки: '+(e.message||e.code)}}
+if(!room)$('#cn').textContent='Данные и переписка сохраняются в этом браузере. Для звонка и синхронизации с собеседником требуется подключить комнату.';tab('stu')}
+init();
+</script></body></html>
